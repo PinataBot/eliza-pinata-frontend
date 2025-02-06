@@ -1,7 +1,14 @@
+"use client";
 import { Separator } from "@/components/ui/separator";
+import { useQueryCoinsData, useQueryGetAllCoinFromAddress } from "@/hooks/query";
+import { BOT_WALLET_ADDRESS } from "@/sui/constants";
+import { useQueryCoinMeta } from "@/hooks/query/useQueryCoinMeta";
 
-// todo: add fetch from insidex and fetch from blockchain
 export const Dashboard = () => {
+  const { data: coinsOnBalance, isLoading: isLoadingCoinsOnBalance } = useQueryGetAllCoinFromAddress(BOT_WALLET_ADDRESS);
+  const coinTypesOnBalance = coinsOnBalance ? coinsOnBalance.map((coin) => coin.coinType) : [];
+  console.log(coinTypesOnBalance);
+  const { data: coinsData, isLoading: isLoadingCoinsData } = useQueryCoinsData(coinTypesOnBalance);
   const coins = [
     { name: "SUI", price: 5, amount: 1000 },
     { name: "AAA", price: 10, amount: 10 },
@@ -45,7 +52,8 @@ export const Dashboard = () => {
                 height: `${item.value}%`,
               }}
             />
-            <span className="text-sm mt-2">{item.name}</span>
+            <span className="text-sm mt-2 font-bold">{item.name}</span>
+            <span className="text-xs">{item.value.toFixed(1)}%</span>
           </div>
         ))}
       </div>
