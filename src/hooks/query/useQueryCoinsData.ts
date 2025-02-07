@@ -64,7 +64,7 @@ interface AdvancedScores {
   uniqueSellersWithVolumeMoreThan1000_14d: string;
 }
 
-interface CoinData {
+export interface CoinData {
   isMintable: string;
   tokensBurned: string;
   tokensBurnedPercentage: string;
