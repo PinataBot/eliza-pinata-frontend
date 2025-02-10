@@ -80,12 +80,11 @@ function mergeMessagesPreservingOrder(messages: MessageResponse[]): MergedMessag
       result.push({ content, createdAt });
     }
   }
+
   return result;
 }
-
+export const REFETCH_MESSAGES_INTERVAL = 5_000;
 export const useQueryMessages = () => {
-  const refetchInterval = 5_000;
-
   // TODO: compare roomID with the current roomID
   const fetchMessages = async () => {
     const { data: messages, error } = await supabaseClient
@@ -114,6 +113,6 @@ export const useQueryMessages = () => {
     enabled: true,
     staleTime: 10 * 1000,
     refetchOnWindowFocus: false,
-    refetchInterval,
+    refetchInterval: REFETCH_MESSAGES_INTERVAL,
   });
 };
