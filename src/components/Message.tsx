@@ -1,7 +1,7 @@
 "use client";
 import { SwapIcon } from "@/components/icons";
 import Link from "next/link";
-import { MergedMessage } from "@/hooks/query/useQueryMessages";
+import { ANALYZE_MESSAGE, MergedMessage, SWAP_MESSAGE } from "@/hooks/query/useQueryMessages";
 
 const PurpleBadgeAction = ({ text }: { text: string }) => (
   <span className="inline-flex items-center rounded-md bg-purple-400/10 px-2 py-[0.1rem] text-[10px] font-medium text-purple-400 ring-1 ring-purple-400/30 ring-inset">
@@ -22,30 +22,14 @@ const BlueWalrusBadgeAction = ({ text }: { text: string }) => (
 // TODO: maybe add tx link to scanner
 export const Message = ({ message }: { message: MergedMessage }) => {
   const localTime = new Date(message?.createdAt).toLocaleString();
-  console.log(message.content?.action_data);
+  if (!message.content?.action_data) {
+    return null;
+  }
+  const actionDataSwap = message.content.action_data as SWAP_MESSAGE;
+  const actionDataPortfolioAnalysis = message.content.action_data as ANALYZE_MESSAGE;
+
   return (
     <div className="w-full my-4 first:mt-0">
-      {message.content.action === "SWAP_TOKEN" && (
-        <div className="w-full -mb-3 pb-5 gap-2 rounded-t-xl px-5 pt-3 bg-gray-200 items-center">
-          <h3 className="font-bold text-3xl">Swap:</h3>
-          <div className="flex rounded-2xl justify-between gap-10 font-bold text-sms text-gray-700 w-full max-w-full">
-            <div className="flex gap-2 items-center">
-              <div className="rounded-full w-4 h-4 bg-red-300" />
-              <span>
-                {message.content.action_data?.amount as string} {message.content.action_data!.amount.toFixed(2)}
-              </span>
-            </div>
-            <SwapIcon />
-            <div className="flex gap-2 items-center">
-              <div className="rounded-full w-4 h-4 bg-red-300" />
-              <span>
-                {/*{message.content.action_data.nextAction.fromCoinType &&*/}
-                {/*  message.content.action_data.nextAction.fromCoinType.split("::")[0]}*/}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
       <div className="flex z-10 items-start gap-2">
         <div className="rounded-xl border-[0.5px] border-gray-700 w-full text-gray-200 px-5 py-3 max-w-full bg-gray-950">
           <p className="font-medium line-clamp-4">{message.content.text}</p>
@@ -56,6 +40,39 @@ export const Message = ({ message }: { message: MergedMessage }) => {
           </div>
         </div>
       </div>
+
+      {message.content.action === "SWAP_TOKEN" && (
+        <div className="w-full flex items-end -mt-3 pt-5 gap-2 rounded-b-xl px-5 pb-3 bg-gray-200">
+          <h3 className="font-bold text-xl">Swap</h3>
+          <div className="flex rounded-2xl gap-10 font-bold text-sms text-gray-700 w-full max-w-full">
+            <div className="flex gap-2 items-center">
+              <span>{actionDataSwap.from_coin_type.split("::").pop()}</span>
+              <span>{actionDataSwap.amount}</span>
+            </div>
+            <SwapIcon />
+            <div className="flex gap-2 items-center">
+              <span>{actionDataSwap.destination_coin_type.split("::").pop()}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {(message.content.action === "PORTFOLIO_ANALYSIS" || message.content.action === "ANALYZE_TRADE") && (
+        <div className="w-full flex items-end -mt-3 pt-5 gap-2 rounded-b-xl px-5 pb-3 bg-gray-200">
+          <h3 className="font-bold text-xl">Analysis</h3>
+          <div className="flex rounded-2xl gap-10 font-bold text-sms text-gray-700 w-full max-w-full">
+            <div className="flex gap-2 items-center">
+              <span>{actionDataPortfolioAnalysis.coinType.split("::").pop()}</span>
+              <span>{actionDataPortfolioAnalysis.amount}</span>
+            </div>
+            <SwapIcon />
+            <div className="flex gap-2 items-center">
+              <span>{actionDataPortfolioAnalysis.nextAction.toCoinType?.split("::").pop()}</span>
+            </div>
+            <PurpleBadgeAction text={actionDataPortfolioAnalysis.recommendation} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

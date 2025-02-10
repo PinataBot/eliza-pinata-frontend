@@ -11,7 +11,7 @@ interface MessageResponse {
   createdAt: string;
 }
 
-interface ANALYZE_MESSAGE {
+export interface ANALYZE_MESSAGE {
   type: "PORTFOLIO_ANALYSIS" | "ANALYZE_TRADE";
   tokenName: string;
   coinType: string;
@@ -27,7 +27,7 @@ interface ANALYZE_MESSAGE {
   };
 }
 
-interface SWAP_MESSAGE {
+export interface SWAP_MESSAGE {
   type: "SWAP_TOKEN";
   amount: number;
   destination_coin_type: string;
@@ -80,7 +80,6 @@ function mergeMessagesPreservingOrder(messages: MessageResponse[]): MergedMessag
       result.push({ content, createdAt });
     }
   }
-
   return result;
 }
 

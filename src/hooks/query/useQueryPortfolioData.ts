@@ -27,7 +27,6 @@ export const useQueryPortfolioData = () => {
       .eq("key", "sui/wallet/portfolio-0x62e6022f612e5cd8e8c4985f94443134167746eaf157aff3afb31bd87c38466a")
       .order("createdAt", { ascending: false });
 
-    console.log("Last porfolio data:", JSON.parse(messages?.[0]?.value as string));
     if (error) {
       console.error(error);
     } else {
