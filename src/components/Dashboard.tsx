@@ -1,38 +1,38 @@
 "use client";
 import { Separator } from "@/components/ui/separator";
-import { useQueryCoinsData, useQueryGetAllCoinFromAddress } from "@/hooks/query";
-import { BOT_WALLET_ADDRESS } from "@/sui/constants";
+import { useQueryPortfolioData, useQueryTotalTrades } from "@/hooks/query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMemo } from "react";
+import { Token } from "@/hooks/query/useQueryPortfolioData";
 
 const Chart = ({
   sortedCoins,
   topCoins,
   totalBalance,
+  totalCoinsUsd,
 }: {
-  sortedCoins: { name: string; price: number; amount: number }[];
-  topCoins: { name: string; price: number; amount: number }[];
-  totalBalance: string;
+  sortedCoins: Token[];
+  topCoins: Token[];
+  totalBalance: number;
+  totalCoinsUsd: number;
 }) => {
   const otherCoins = sortedCoins.slice(4);
 
-  const otherTotal = otherCoins.length ? otherCoins.reduce((sum, coin) => sum + coin.price * coin.amount, 0) : 0;
-
   const chartData = useMemo(() => {
     const topChartData = topCoins.map((coin) => ({
-      name: coin.name,
-      value: ((coin.price * coin.amount) / +totalBalance) * 100,
+      name: coin.symbol,
+      value: (+coin.usd / +totalBalance) * 100,
     }));
 
     if (otherCoins.length > 0) {
       topChartData.push({
         name: "Other",
-        value: (otherTotal / +totalBalance) * 100,
+        value: (+totalCoinsUsd / +totalBalance) * 100,
       });
     }
 
     return topChartData;
-  }, [topCoins, otherTotal, totalBalance, otherCoins]);
+  }, [topCoins, totalBalance, totalCoinsUsd, otherCoins]);
 
   return (
     <div className="flex items-baseline gap-4 h-64 mt-8">
@@ -53,48 +53,34 @@ const Chart = ({
 };
 
 export const Dashboard = () => {
-  const { data: coinsOnBalance, isLoading: isLoadingCoinsOnBalance } = useQueryGetAllCoinFromAddress(BOT_WALLET_ADDRESS);
-  const coinTypesOnBalance = useMemo(() => coinsOnBalance?.map((coin) => coin.coinType) || [], [coinsOnBalance]);
+  const { data: coinsData, isLoading: isLoadingCoinsData } = useQueryPortfolioData();
+  const { data: totalTrades, isLoading: isLoadingTotalTrades } = useQueryTotalTrades();
 
-  const { data: coinsData, isLoading: isLoadingCoinsData } = useQueryCoinsData(coinTypesOnBalance);
-
-  if (isLoadingCoinsOnBalance || isLoadingCoinsData) {
+  if (isLoadingCoinsData) {
     return <Skeleton className="h-full min-h-72 mt-5 rounded-2xl w-1/3" />;
   }
 
-  if (!coinsData || !coinsOnBalance) {
+  if (!coinsData) {
     return <p>Unable to load coins data</p>;
   }
 
-  // Array of normalized coins with price and amount
-  const coins = coinsOnBalance
-    .map((coin) => {
-      const coinInfo = coinsData.find((data) => data.coinMetadata.coinType === coin.coinType);
-      if (!coinInfo) return null;
-      const decimals = parseInt(coinInfo.coinMetadata.decimals);
-      const price = parseFloat(coinInfo.coinPrice);
-      const amount = parseFloat(coin.totalBalance) / Math.pow(10, decimals);
-      return {
-        name: coinInfo.coinMetadata.symbol,
-        price,
-        amount,
-      };
-    })
-    .filter((coin) => coin !== null);
+  // Calculate total balance
+  const totalCoinsUsd = coinsData.value.tokens.reduce((acc, coin) => acc + +coin.usd, 0);
+  const totalBalance = +coinsData.value.totalUsd + totalCoinsUsd;
 
-  const totalBalance = (coins.length ? coins.reduce((sum, coin) => sum + coin.price * coin.amount, 0) : 0).toFixed(1);
-
-  const sortedCoins = coins.sort((a, b) => b.price * b.amount - a.price * a.amount);
+  // Sort coins by price * amount
+  const coinsOnBalance = coinsData.value.tokens;
+  const sortedCoins = coinsOnBalance.sort((a, b) => +b.usd * +b.totalBalance - +a.usd * +a.totalBalance);
   const topCoins = sortedCoins.slice(0, 4);
 
   return (
     <div className="h-full text-white p-4 bg-gray-950 rounded-2xl w-1/3">
       <h1 className="font-bold">Balance:</h1>
-      <p className="text-3xl font-medium">${totalBalance}</p>
+      <p className="text-3xl font-medium">${totalBalance.toFixed(2)}</p>
       <div className="flex flex-wrap justify-between">
         <div>
           <p className="text-gray-100 text-sm">trades</p>
-          <p className="text-xl font-medium">140</p>
+          {isLoadingTotalTrades ? <Skeleton className="h-6 w-12" /> : <p className="text-xl font-medium">{totalTrades}</p>}
         </div>
         <div>
           <p className="text-gray-100 text-sm">tokens</p>
@@ -104,11 +90,11 @@ export const Dashboard = () => {
       <Separator />
       <h2>Top tokens holding:</h2>
       {topCoins.map((coin) => (
-        <p className="font-black" key={coin.name}>
-          {coin.name}
+        <p className="font-black" key={coin.coinType}>
+          {coin.symbol}
         </p>
       ))}
-      <Chart sortedCoins={sortedCoins} topCoins={topCoins} totalBalance={totalBalance} />
+      <Chart sortedCoins={sortedCoins} topCoins={topCoins} totalBalance={totalBalance} totalCoinsUsd={totalCoinsUsd} />
     </div>
   );
 };
