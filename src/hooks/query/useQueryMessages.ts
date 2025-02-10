@@ -1,17 +1,25 @@
 import supabaseClient from "@/lib/supabase/supabase";
 import { useQuery } from "@tanstack/react-query";
 
+interface Message {
+  text: string;
+  user: string;
+  action: string;
+}
+
 export const useQueryMessages = () => {
   const refetchInterval = 5_000;
 
+  // TODO: compare roomID with the current roomID
   const fetchMessages = async () => {
     const { data: messages, error } = await supabaseClient
-      .from("cache")
-      .select("value")
-      .eq("key", "sui/wallet/portfolio-0x62e6022f612e5cd8e8c4985f94443134167746eaf157aff3afb31bd87c38466a")
-      .order("createdAt", { ascending: false });
+      .from("memories")
+      .select("content, createdAt")
+      //.eq("roomID", "")
+      .or("content->>source.is.null,content->>source.neq.direct") // Include records where source is null OR not "direct"
+      .order("createdAt", { ascending: false })
+      .limit(50);
 
-    console.log("Last porfolio data:", JSON.parse(messages?.[0]?.value as string));
     if (error) {
       console.error(error);
     } else {
@@ -21,12 +29,12 @@ export const useQueryMessages = () => {
   };
 
   return useQuery({
-    queryKey: ["portfolio-data"],
+    queryKey: ["messages"],
     queryFn: async () => {
       const response = await fetchMessages();
       if (!response) return null;
-      const portfolioData = JSON.parse(response[0].value as string) as PortfolioData;
-      return portfolioData;
+
+      return response;
     },
     enabled: true,
     staleTime: 10 * 1000,

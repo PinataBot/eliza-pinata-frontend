@@ -1,24 +1,21 @@
 "use client";
 import { Message, MessageProps } from "@/components/Message";
-import { useEffect, useRef } from "react";
+import { useQueryMessages } from "@/hooks/query/useQueryMessages";
 
-export const MessageFeed = ({ messages }: { messages: MessageProps[] }) => {
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+export const MessageFeed = () => {
+  const { data: messages } = useQueryMessages();
 
   return (
     <div className="w-full md:px-20 max-h-full auto overflow-scroll">
-      {messages.map((message, index) => (
-        <Message key={index} text={message.text} time={message.time} swapData={message.swapData} />
+      {messages?.map((message, index) => (
+        <Message
+          key={index}
+          text={message?.content?.text as string}
+          time={message.createdAt!}
+          action={message?.content?.action as string}
+          blobId={message?.content?.blobId as string}
+        />
       ))}
-      <div ref={messagesEndRef} />
     </div>
   );
 };

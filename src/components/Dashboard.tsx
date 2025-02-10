@@ -63,15 +63,14 @@ export const Dashboard = () => {
   if (!coinsData) {
     return <p>Unable to load coins data</p>;
   }
-
   // Calculate total balance
-  const totalCoinsUsd = coinsData.value.tokens.reduce((acc, coin) => acc + +coin.usd, 0);
-  const totalBalance = +coinsData.value.totalUsd + totalCoinsUsd;
+  const totalCoinsUsd = coinsData?.value?.tokens.reduce((acc, coin) => acc + +coin.usd, 0);
+  const totalBalance = +coinsData?.value?.totalUsd + totalCoinsUsd;
 
   // Sort coins by price * amount
-  const coinsOnBalance = coinsData.value.tokens;
-  const sortedCoins = coinsOnBalance.sort((a, b) => +b.usd * +b.totalBalance - +a.usd * +a.totalBalance);
-  const topCoins = sortedCoins.slice(0, 4);
+  const coinsOnBalance = coinsData?.value?.tokens;
+  const sortedCoins = coinsOnBalance?.sort((a, b) => +b.usd * +b.totalBalance - +a.usd * +a.totalBalance);
+  const topCoins = sortedCoins?.slice(0, 4);
 
   return (
     <div className="h-full text-white p-4 bg-gray-950 rounded-2xl w-1/3">
@@ -84,12 +83,12 @@ export const Dashboard = () => {
         </div>
         <div>
           <p className="text-gray-100 text-sm">tokens</p>
-          <p className="text-xl font-medium">{coinsOnBalance.length}</p>
+          <p className="text-xl font-medium">{coinsOnBalance?.length}</p>
         </div>
       </div>
       <Separator />
       <h2>Top tokens holding:</h2>
-      {topCoins.map((coin) => (
+      {topCoins?.map((coin) => (
         <p className="font-black" key={coin.coinType}>
           {coin.symbol}
         </p>

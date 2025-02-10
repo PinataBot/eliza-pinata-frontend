@@ -1,9 +1,13 @@
 "use client";
 import { SwapIcon } from "@/components/icons";
+import Link from "next/link";
 
 export interface MessageProps {
   text: string;
   time: string;
+  action: string;
+  actionData?: {};
+  blobId?: string;
   swapData?: {
     fromSwap: string;
     toSwap: string;
@@ -13,10 +17,28 @@ export interface MessageProps {
   };
 }
 
+const PurpleBadgeAction = ({ text }: { text: string }) => (
+  <span className="inline-flex items-center rounded-md bg-purple-400/10 px-2 py-[0.1rem] text-[10px] font-medium text-purple-400 ring-1 ring-purple-400/30 ring-inset">
+    {text}
+  </span>
+);
+
+const BlueWalrusBadgeAction = ({ text }: { text: string }) => (
+  <Link
+    href={`https://walruscan.com/testnet/blob/${text}`}
+    className="inline-flex items-center rounded-md bg-blue-400/10 px-2 py-[0.1rem] text-[10px] font-medium text-blue-400 ring-1 ring-blue-400/30 ring-inset"
+    target="_blank"
+  >
+    Blob ID:{text.slice(0, 2)}...{text.slice(-2)}
+  </Link>
+);
+
 // TODO: maybe add tx link to scanner
-export const Message = ({ text, time, swapData }: MessageProps) => {
+export const Message = ({ text, time, action, swapData, blobId }: MessageProps) => {
+  const localTime = new Date(time).toLocaleString();
+
   return (
-    <div className="w-full my-4">
+    <div className="w-full my-4 first:mt-0">
       {swapData && (
         <div className="w-full -mb-3 pb-5 gap-2 rounded-t-xl px-5 pt-3 bg-gray-200 items-center">
           <h3 className="font-bold text-3xl">Swap:</h3>
@@ -39,9 +61,12 @@ export const Message = ({ text, time, swapData }: MessageProps) => {
       )}
       <div className="flex z-10 items-start gap-2">
         <div className="rounded-xl border-[0.5px] border-gray-700 w-full text-gray-200 px-5 py-3 max-w-full bg-gray-950">
-          <h3 className="font-bold text-xl">Some heading maybe</h3>
           <p className="font-medium line-clamp-4">{text}</p>
-          <p className="text-xs mt-2 text-gray-600">{time}</p>
+          <div className="w-full flex justify-between items-end mt-2">
+            <p className="text-xs text-gray-600 items-center">{localTime}</p>
+            {blobId && <BlueWalrusBadgeAction text={blobId} />}
+            {action && <PurpleBadgeAction text={action} />}
+          </div>
         </div>
       </div>
     </div>
