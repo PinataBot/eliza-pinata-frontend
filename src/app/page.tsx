@@ -6,6 +6,7 @@ import { Header } from "@/components/Header";
 import { TypeAnimation } from "react-type-animation";
 import { useLocalStorage } from "usehooks-ts";
 import { useEffect } from "react";
+import supabaseClient from "@/lib/supabase/supabase";
 
 const mockMessages: MessageProps[] = [
   {
@@ -101,6 +102,7 @@ const mockMessages: MessageProps[] = [
 
 export default function Home() {
   const [showGreeting, setShowGreeting] = useLocalStorage<boolean>("showGreeting", true);
+
   useEffect(() => {
     if (showGreeting) {
       const timer = setTimeout(() => {
@@ -110,6 +112,24 @@ export default function Home() {
       return () => clearTimeout(timer);
     }
   }, [showGreeting]);
+
+  // useEffect(() => {
+  //   const fetchMessages = async () => {
+  //     const { data: messages, error } = await supabaseClient
+  //       .from("cache")
+  //       .select("value")
+  //       .eq("key", "sui/wallet/portfolio-0x62e6022f612e5cd8e8c4985f94443134167746eaf157aff3afb31bd87c38466a");
+
+  //     console.log("Messages", messages);
+  //     if (error) {
+  //       console.error(error);
+  //     } else {
+  //       console.log(messages);
+  //     }
+  //   };
+  //   fetchMessages();
+  // }, []);
+
   return (
     <div className="min-h-screen w-screen relative max-h-screen bg-gray-900 font-[family-name:var(--font-geist-sans)] px-5 py-5 md:px-10 md:py-10 flex flex-col-reverse md:flex-row">
       {/*<Header />*/}
