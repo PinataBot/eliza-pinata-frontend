@@ -109,6 +109,10 @@ export const Dashboard = () => {
         </div>
       ))}
       <Chart sortedCoins={sortedCoins} topCoins={topCoins} totalBalance={totalBalance} totalCoinsUsd={totalCoinsUsd} />
+      <p className="text-sm text-gray-400">
+        All operations, including call actions uploaded to Walrus and swaps, are executed autonomously without any human
+        intervention.
+      </p>
     </div>
   );
 };
