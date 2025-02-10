@@ -81,7 +81,7 @@ export const Message = ({ message }: { message: MergedMessage }) => {
               {message.content.action && <BadgeAction text={message.content.action} />}
               {message.content.blobId && <BlueWalrusBadgeAction text={message.content.blobId} />}
             </div>
-            <p className="text-xs text-gray-600 items-center">{localTime}</p>
+            <p className="text-xs text-gray-500 items-center">{localTime}</p>
           </div>
         </div>
       </div>
