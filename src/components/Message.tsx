@@ -6,15 +6,21 @@ export interface MessageProps {
   text: string;
   time: string;
   action: string;
-  actionData?: {};
-  blobId?: string;
-  swapData?: {
-    fromSwap: string;
-    toSwap: string;
-    amountFrom: string;
-    amountTo: string;
-    usdAmount: string;
+  actionData?: {
+    tokenName: string;
+    coinType: string;
+    recommendation: string;
+    amount: number;
+    confidence: number;
+    reasoning: string;
+    risks: string[];
+    opportunities: string[];
+    nextAction: {
+      fromCoinType: string;
+      toCoinType: string;
+    };
   };
+  blobId?: string;
 }
 
 const PurpleBadgeAction = ({ text }: { text: string }) => (
@@ -34,27 +40,25 @@ const BlueWalrusBadgeAction = ({ text }: { text: string }) => (
 );
 
 // TODO: maybe add tx link to scanner
-export const Message = ({ text, time, action, swapData, blobId }: MessageProps) => {
+export const Message = ({ text, time, action, actionData, blobId }: MessageProps) => {
   const localTime = new Date(time).toLocaleString();
 
   return (
     <div className="w-full my-4 first:mt-0">
-      {swapData && (
+      {actionData && (
         <div className="w-full -mb-3 pb-5 gap-2 rounded-t-xl px-5 pt-3 bg-gray-200 items-center">
           <h3 className="font-bold text-3xl">Swap:</h3>
           <div className="flex rounded-2xl justify-between gap-10 font-bold text-sms text-gray-700 w-full max-w-full">
             <div className="flex gap-2 items-center">
               <div className="rounded-full w-4 h-4 bg-red-300" />
               <span>
-                {swapData.fromSwap} {swapData.amountFrom}
+                {actionData.tokenName} {actionData.amount}
               </span>
             </div>
             <SwapIcon />
             <div className="flex gap-2 items-center">
               <div className="rounded-full w-4 h-4 bg-red-300" />
-              <span>
-                {swapData.toSwap} {swapData.amountTo}
-              </span>
+              <span>{actionData.nextAction.toCoinType.split(":")[-1]}</span>
             </div>
           </div>
         </div>
