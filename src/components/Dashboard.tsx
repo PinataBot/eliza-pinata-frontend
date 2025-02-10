@@ -74,7 +74,7 @@ export const Dashboard = () => {
 
   return (
     <div className="h-full text-white p-4 bg-gray-950 rounded-2xl md:w-1/3 w-full">
-      <h1 className="font-black">Agent balance</h1>
+      <h1 className="text-3xl font-extrabold gradientText">Agent balance</h1>
       <p className="text-3xl font-black">${totalBalance.toFixed(2)}</p>
       <div className="flex flex-wrap justify-between">
         <p className="mt-2 flex items-baseline gap-x-2">
