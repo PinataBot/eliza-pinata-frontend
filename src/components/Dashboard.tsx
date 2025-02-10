@@ -73,25 +73,40 @@ export const Dashboard = () => {
   const topCoins = sortedCoins?.slice(0, 4);
 
   return (
-    <div className="h-full text-white p-4 bg-gray-950 rounded-2xl w-1/3">
-      <h1 className="font-bold">Balance:</h1>
-      <p className="text-3xl font-medium">${totalBalance.toFixed(2)}</p>
+    <div className="h-full text-white p-4 bg-gray-950 rounded-2xl md:w-1/3 w-full">
+      <h1 className="font-black">Agent balance</h1>
+      <p className="text-3xl font-black">${totalBalance.toFixed(2)}</p>
       <div className="flex flex-wrap justify-between">
-        <div>
-          <p className="text-gray-100 text-sm">trades</p>
-          {isLoadingTotalTrades ? <Skeleton className="h-6 w-12" /> : <p className="text-xl font-medium">{totalTrades}</p>}
-        </div>
-        <div>
-          <p className="text-gray-100 text-sm">tokens</p>
-          <p className="text-xl font-medium">{coinsOnBalance?.length}</p>
+        <p className="mt-2 flex items-baseline gap-x-2">
+          {isLoadingTotalTrades ? (
+            <Skeleton className="h-12 w-4" />
+          ) : (
+            <span className="text-3xl font-semibold tracking-tight text-white">{totalTrades}</span>
+          )}
+          <span className="text-sm text-gray-400">trades</span>
+        </p>
+        <p className="mt-2 flex items-baseline gap-x-2">
+          <span className="text-3xl font-semibold tracking-tight text-white">{coinsOnBalance?.length}</span>
+          <span className="text-sm text-gray-400">tokens</span>
+        </p>
+      </div>
+
+      <Separator className="bg-gray-700" />
+      <h2 className="font-black mt-2">Top tokens holding:</h2>
+      {/* SUI */}
+      <div className="flex flex-col gap-2">
+        <div className="flex justify-between">
+          <p>{Number(coinsData?.value?.totalSui).toFixed(2)} SUI</p>
+          <p>${Number(coinsData?.value?.totalUsd).toFixed(2)}</p>
         </div>
       </div>
-      <Separator />
-      <h2>Top tokens holding:</h2>
       {topCoins?.map((coin) => (
-        <p className="font-black" key={coin.coinType}>
-          {coin.symbol}
-        </p>
+        <div className="flex justify-between">
+          <p>
+            {Number(coin.totalBalance).toFixed(2)} {coin.symbol}
+          </p>
+          <p>${Number(coin.usd).toFixed(2)}</p>
+        </div>
       ))}
       <Chart sortedCoins={sortedCoins} topCoins={topCoins} totalBalance={totalBalance} totalCoinsUsd={totalCoinsUsd} />
     </div>
