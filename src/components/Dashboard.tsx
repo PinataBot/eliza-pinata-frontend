@@ -74,7 +74,13 @@ export const Dashboard = () => {
 
   return (
     <div className="h-full text-white p-4 bg-gray-950 rounded-2xl md:w-1/3 w-full">
-      <h1 className="text-3xl font-extrabold gradientText">Agent balance</h1>
+      <a
+        className="text-3xl font-extrabold gradientText hover:underline hover:text-white cursor-pointer"
+        href="https://suivision.xyz/account/eliza@pinata"
+        target="_blank"
+      >
+        Agent balance
+      </a>
       <p className="text-3xl font-black">${totalBalance.toFixed(2)}</p>
       <div className="flex flex-wrap justify-between">
         <p className="mt-2 flex items-baseline gap-x-2">
@@ -92,20 +98,20 @@ export const Dashboard = () => {
       </div>
 
       <Separator className="bg-gray-700" />
-      <h2 className="font-black mt-2">Top tokens holding:</h2>
+      <h2 className="font-bold mt-2 mb-1">Top tokens holding:</h2>
       {/* SUI */}
       <div className="flex flex-col gap-2">
-        <div className="flex justify-between">
+        <div className="flex justify-between items-end">
           <p>{Number(coinsData?.value?.totalSui).toFixed(2)} SUI</p>
-          <p>${Number(coinsData?.value?.totalUsd).toFixed(2)}</p>
+          <p className="text-gray-400 text-[13px]">${Number(coinsData?.value?.totalUsd).toFixed(2)}</p>
         </div>
       </div>
       {topCoins?.map((coin) => (
-        <div className="flex justify-between">
+        <div className="flex justify-between items-end">
           <p>
             {Number(coin.totalBalance).toFixed(2)} {coin.symbol}
           </p>
-          <p>${Number(coin.usd).toFixed(2)}</p>
+          <p className="text-gray-400 text-[13px]">${Number(coin.usd).toFixed(2)}</p>
         </div>
       ))}
       <Chart sortedCoins={sortedCoins} topCoins={topCoins} totalBalance={totalBalance} totalCoinsUsd={totalCoinsUsd} />

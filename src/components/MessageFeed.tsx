@@ -40,10 +40,10 @@ export const MessageFeed = () => {
             <span>Updating data...</span>
           </>
         ) : (
-          <>
-            <span>Next update in:</span>
-            <span className="font-medium">{timeLeft} sec.</span>
-          </>
+          <div className="flex items-center gap-1 font-medium">
+            <span>Next update</span>
+            <span>{timeLeft} sec</span>
+          </div>
         )}
       </div>
     );

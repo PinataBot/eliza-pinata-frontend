@@ -15,10 +15,19 @@ interface IAnalyzeDialogProps extends IDialogBaseProps {
 export const AnalyzeDialog = (props: IAnalyzeDialogProps) => {
   return (
     <Dialog open={props.open} onClose={props.onClose} closeButton={true}>
-      <div className="flex flex-col items-center text-sm pb-5 px-5 pt-[55px] text-gray-700">
-        Reasoning:<p>{props.analyzeData.reasoning}</p>
-        Opportunities:<p>{props.analyzeData.opportunities}</p>
-        Risks:<p>{props.analyzeData.risks}</p>
+      <div className="flex flex-col items-center text-sm pb-12 px-5 pt-[55px] text-gray-700">
+        <h3 className="font-bold text-xl mb-4">Analysis</h3>
+        <div className="flex flex-col gap-3">
+          <p>
+            <span className="font-bold">Reasoning:</span> {props.analyzeData.reasoning}
+          </p>
+          <p>
+            <span className="font-bold">Opportunities:</span> {props.analyzeData.opportunities}
+          </p>
+          <p>
+            <span className="font-bold">Risks:</span> {props.analyzeData.risks}
+          </p>
+        </div>
       </div>
     </Dialog>
   );

@@ -83,7 +83,7 @@ function mergeMessagesPreservingOrder(messages: MessageResponse[]): MergedMessag
 
   return result;
 }
-export const REFETCH_MESSAGES_INTERVAL = 5_000;
+export const REFETCH_MESSAGES_INTERVAL = 250 * 1_000; // 250 seconds
 export const useQueryMessages = () => {
   // TODO: compare roomID with the current roomID
   const fetchMessages = async () => {

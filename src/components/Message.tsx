@@ -12,6 +12,33 @@ const PurpleBadgeAction = ({ text }: { text: string }) => (
   </span>
 );
 
+const GreenBadgeAction = ({ text }: { text: string }) => (
+  <span className="inline-flex items-center rounded-md bg-green-500/10 px-2 py-[0.1rem] text-[10px] font-medium text-green-400 ring-1 ring-inset ring-green-500/20">
+    {text}
+  </span>
+);
+
+const GrayBadgeAction = ({ text }: { text: string }) => (
+  <span className="inline-flex items-center rounded-md bg-gray-400/10 px-2 py-[0.1rem] text-[10px] font-medium text-gray-400 ring-1 ring-inset ring-gray-400/20">
+    {text}
+  </span>
+);
+
+const BadgeAction = ({ text }: { text: string }) => {
+  if (text === "SWAP_TOKEN") {
+    return <GreenBadgeAction text={text} />;
+  } else if (text === "PORTFOLIO_ANALYSIS" || text === "ANALYZE_TRADE") {
+    return <PurpleBadgeAction text={text} />;
+  }
+  return <GrayBadgeAction text={text} />;
+};
+
+const BadgeActionGrayForWhiteBg = ({ text }: { text: string }) => (
+  <span className="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10">
+    {text}
+  </span>
+);
+
 const BlueWalrusBadgeAction = ({ text }: { text: string }) => (
   <Link
     href={`https://walruscan.com/testnet/blob/${text}`}
@@ -34,7 +61,12 @@ export const Message = ({ message }: { message: MergedMessage }) => {
   const isAnalyze = message.content.action === "PORTFOLIO_ANALYSIS" || message.content.action === "ANALYZE_TRADE";
   return (
     <div
-      className={cn("w-full my-4 first:mt-0", isAnalyze && "cursor-pointer")}
+      className={cn(
+        "w-full my-4 first:mt-0",
+        isAnalyze && "cursor-pointer",
+        isAnalyze && "border-2 border-inherit rounded-[14px]",
+        isAnalyze && "hover:border-purple-400",
+      )}
       onClick={() => {
         if (isAnalyze) {
           setIsOpenAnalyzeDialogOpen(true);
@@ -45,22 +77,23 @@ export const Message = ({ message }: { message: MergedMessage }) => {
         <div className="rounded-xl border-[0.5px] border-gray-700 w-full text-gray-200 px-5 py-3 max-w-full bg-gray-950">
           <p className="font-medium line-clamp-4">{message.content.text}</p>
           <div className="w-full flex justify-between items-end mt-2">
+            <div className="flex gap-1">
+              {message.content.action && <BadgeAction text={message.content.action} />}
+              {message.content.blobId && <BlueWalrusBadgeAction text={message.content.blobId} />}
+            </div>
             <p className="text-xs text-gray-600 items-center">{localTime}</p>
-            {message.content.blobId && <BlueWalrusBadgeAction text={message.content.blobId} />}
-            {message.content.action && <PurpleBadgeAction text={message.content.action} />}
           </div>
         </div>
       </div>
 
       {message.content.action === "SWAP_TOKEN" && (
-        <div className="w-full flex items-end -mt-3 pt-5 gap-2 rounded-b-xl px-5 pb-3 bg-gray-200">
-          <h3 className="font-bold text-xl">Swap</h3>
-          <div className="flex rounded-2xl gap-10 font-bold text-sms text-gray-700 w-full max-w-full">
-            <div className="flex gap-2 items-center">
-              <span>{actionDataSwap.from_coin_type.split("::").pop()}</span>
+        <div className="w-full flex items-end -mt-3 pt-5 gap-2 rounded-b-xl px-5 pb-3 bg-gray-300">
+          <div className="flex rounded-2xl items-center gap-2 font-medium text-md text-black w-full max-w-full">
+            <div className="flex gap-1 items-center">
               <span>{actionDataSwap.amount}</span>
+              <span>{actionDataSwap.from_coin_type.split("::").pop()}</span>
             </div>
-            <SwapIcon />
+            <SwapIcon className="w-5 h-5" />
             <div className="flex gap-2 items-center">
               <span>{actionDataSwap.destination_coin_type.split("::").pop()}</span>
             </div>
@@ -68,18 +101,31 @@ export const Message = ({ message }: { message: MergedMessage }) => {
         </div>
       )}
       {(message.content.action === "PORTFOLIO_ANALYSIS" || message.content.action === "ANALYZE_TRADE") && (
-        <div className="w-full flex items-end -mt-3 pt-5 gap-2 rounded-b-xl px-5 pb-3 bg-gray-200">
-          <h3 className="font-bold text-xl">Analysis</h3>
-          <div className="flex rounded-2xl gap-10 font-bold text-sms text-gray-700 w-full max-w-full">
-            <div className="flex gap-2 items-center">
-              <span>{actionDataPortfolioAnalysis.coinType.split("::").pop()}</span>
-              <span>{actionDataPortfolioAnalysis.amount}</span>
-            </div>
-            <SwapIcon />
-            <div className="flex gap-2 items-center">
-              <span>{actionDataPortfolioAnalysis.nextAction.toCoinType?.split("::").pop()}</span>
-            </div>
-            <PurpleBadgeAction text={actionDataPortfolioAnalysis.recommendation} />
+        <div className="w-full flex items-end -mt-3 pt-5 gap-2 rounded-b-xl px-5 pb-3 bg-gray-300">
+          <div className="flex rounded-2xl items-center gap-2 font-medium text-md text-black w-full max-w-full">
+            {actionDataPortfolioAnalysis.recommendation === "HOLD" ? (
+              <BadgeActionGrayForWhiteBg
+                text={
+                  "Recommended: " +
+                  actionDataPortfolioAnalysis.recommendation.toLocaleLowerCase() +
+                  " " +
+                  actionDataPortfolioAnalysis.coinType.split("::").pop()
+                }
+              />
+            ) : (
+              <BadgeActionGrayForWhiteBg
+                text={
+                  "Recommended: " +
+                  actionDataPortfolioAnalysis.recommendation.toLocaleLowerCase() +
+                  " " +
+                  actionDataPortfolioAnalysis.amount +
+                  " " +
+                  actionDataPortfolioAnalysis.coinType.split("::").pop() +
+                  " for " +
+                  actionDataPortfolioAnalysis.nextAction.toCoinType?.split("::").pop()
+                }
+              />
+            )}
           </div>
         </div>
       )}
