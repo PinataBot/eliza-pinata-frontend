@@ -2,6 +2,9 @@
 import { SwapIcon } from "@/components/icons";
 import Link from "next/link";
 import { ANALYZE_MESSAGE, MergedMessage, SWAP_MESSAGE } from "@/hooks/query/useQueryMessages";
+import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { AnalyzeDialog } from "@/components/Dialogs/AnalyzeDialog";
 
 const PurpleBadgeAction = ({ text }: { text: string }) => (
   <span className="inline-flex items-center rounded-md bg-purple-400/10 px-2 py-[0.1rem] text-[10px] font-medium text-purple-400 ring-1 ring-purple-400/30 ring-inset">
@@ -21,15 +24,23 @@ const BlueWalrusBadgeAction = ({ text }: { text: string }) => (
 
 // TODO: maybe add tx link to scanner
 export const Message = ({ message }: { message: MergedMessage }) => {
+  const [isOpenAnalyzeDialogOpen, setIsOpenAnalyzeDialogOpen] = useState(false);
   const localTime = new Date(message?.createdAt).toLocaleString();
   if (!message.content?.action_data) {
     return null;
   }
   const actionDataSwap = message.content.action_data as SWAP_MESSAGE;
   const actionDataPortfolioAnalysis = message.content.action_data as ANALYZE_MESSAGE;
-
+  const isAnalyze = message.content.action === "PORTFOLIO_ANALYSIS" || message.content.action === "ANALYZE_TRADE";
   return (
-    <div className="w-full my-4 first:mt-0">
+    <div
+      className={cn("w-full my-4 first:mt-0", isAnalyze && "cursor-pointer")}
+      onClick={() => {
+        if (isAnalyze) {
+          setIsOpenAnalyzeDialogOpen(true);
+        }
+      }}
+    >
       <div className="flex z-10 items-start gap-2">
         <div className="rounded-xl border-[0.5px] border-gray-700 w-full text-gray-200 px-5 py-3 max-w-full bg-gray-950">
           <p className="font-medium line-clamp-4">{message.content.text}</p>
@@ -56,7 +67,6 @@ export const Message = ({ message }: { message: MergedMessage }) => {
           </div>
         </div>
       )}
-
       {(message.content.action === "PORTFOLIO_ANALYSIS" || message.content.action === "ANALYZE_TRADE") && (
         <div className="w-full flex items-end -mt-3 pt-5 gap-2 rounded-b-xl px-5 pb-3 bg-gray-200">
           <h3 className="font-bold text-xl">Analysis</h3>
@@ -72,6 +82,13 @@ export const Message = ({ message }: { message: MergedMessage }) => {
             <PurpleBadgeAction text={actionDataPortfolioAnalysis.recommendation} />
           </div>
         </div>
+      )}
+      {isAnalyze && (
+        <AnalyzeDialog
+          open={isOpenAnalyzeDialogOpen}
+          onClose={() => setIsOpenAnalyzeDialogOpen(false)}
+          analyzeData={actionDataPortfolioAnalysis}
+        />
       )}
     </div>
   );
