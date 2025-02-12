@@ -5,7 +5,7 @@ import { ANALYZE_MESSAGE, MergedMessage, SWAP_MESSAGE } from "@/hooks/query/useQ
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { AnalyzeDialog } from "@/components/Dialogs/AnalyzeDialog";
-import { MessageActionType } from "@/types";
+import { MessageActionType, PortfolioAnalysis, TrendingTokens } from "@/types";
 
 const PurpleBadgeAction = ({ text }: { text: string }) => (
   <span className="inline-flex items-center rounded-md bg-purple-400/10 px-2 py-[0.1rem] text-[10px] font-medium text-purple-400 ring-1 ring-purple-400/30 ring-inset">
@@ -28,7 +28,7 @@ const GrayBadgeAction = ({ text }: { text: string }) => (
 const BadgeAction = ({ text }: { text: string }) => {
   if (text === MessageActionType.SWAP_TOKEN) {
     return <GreenBadgeAction text={text} />;
-  } else if (text === MessageActionType.ANALYZE_TRADE || text === MessageActionType.ANALYZE_PORTFOLIO) {
+  } else if (text === TrendingTokens || text === PortfolioAnalysis) {
     return <PurpleBadgeAction text={text} />;
   }
   return <GrayBadgeAction text={text} />;
@@ -56,8 +56,7 @@ export const Message = ({ message }: { message: MergedMessage }) => {
   const localTime = new Date(message.createdAt).toLocaleString();
   const actionDataSwap = message.content.action_data as SWAP_MESSAGE;
   const actionDataPortfolioAnalysis = message.content.action_data as ANALYZE_MESSAGE;
-  const isAnalyze =
-    message.content.action === MessageActionType.ANALYZE_PORTFOLIO || message.content.action === MessageActionType.ANALYZE_TRADE;
+  const isAnalyze = message.content.action === PortfolioAnalysis || message.content.action === TrendingTokens;
 
   return (
     <div
@@ -101,8 +100,7 @@ export const Message = ({ message }: { message: MergedMessage }) => {
       {/*    </div>*/}
       {/*  </div>*/}
       {/*)}*/}
-      {(message.content.action === MessageActionType.ANALYZE_PORTFOLIO ||
-        message.content.action === MessageActionType.ANALYZE_TRADE) && (
+      {(message.content.action === PortfolioAnalysis || message.content.action === TrendingTokens) && (
         <div className="w-full flex items-end -mt-3 pt-5 gap-2 rounded-b-xl px-5 pb-3 bg-gray-300">
           <div className="flex rounded-2xl items-center gap-2 font-medium text-md text-black w-full max-w-full">
             {actionDataPortfolioAnalysis?.recommendation === "HOLD" ? (

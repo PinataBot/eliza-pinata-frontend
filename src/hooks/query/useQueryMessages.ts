@@ -1,6 +1,6 @@
 import supabaseClient from "@/lib/supabase/supabase";
 import { useQuery } from "@tanstack/react-query";
-import { MessageActionType } from "@/types";
+import { MessageActionType, PortfolioAnalysisType, TrendingTokensType } from "@/types";
 
 interface MessageResponse {
   content: {
@@ -13,7 +13,7 @@ interface MessageResponse {
 }
 
 export interface ANALYZE_MESSAGE {
-  type: MessageActionType.ANALYZE_PORTFOLIO | MessageActionType.ANALYZE_TRADE;
+  type: PortfolioAnalysisType | TrendingTokensType;
   tokenName: string;
   coinType: string;
   recommendation: string;
