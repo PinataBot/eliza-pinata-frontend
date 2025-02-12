@@ -5,6 +5,7 @@ import { ANALYZE_MESSAGE, MergedMessage, SWAP_MESSAGE } from "@/hooks/query/useQ
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { AnalyzeDialog } from "@/components/Dialogs/AnalyzeDialog";
+import { MessageActionType } from "@/types";
 
 const PurpleBadgeAction = ({ text }: { text: string }) => (
   <span className="inline-flex items-center rounded-md bg-purple-400/10 px-2 py-[0.1rem] text-[10px] font-medium text-purple-400 ring-1 ring-purple-400/30 ring-inset">
@@ -25,9 +26,9 @@ const GrayBadgeAction = ({ text }: { text: string }) => (
 );
 
 const BadgeAction = ({ text }: { text: string }) => {
-  if (text === "SWAP_TOKEN") {
+  if (text === MessageActionType.SWAP_TOKEN) {
     return <GreenBadgeAction text={text} />;
-  } else if (text === "PORTFOLIO_ANALYSIS" || text === "ANALYZE_TRADE") {
+  } else if (text === MessageActionType.ANALYZE_TRADE || text === MessageActionType.ANALYZE_PORTFOLIO) {
     return <PurpleBadgeAction text={text} />;
   }
   return <GrayBadgeAction text={text} />;
@@ -52,13 +53,12 @@ const BlueWalrusBadgeAction = ({ text }: { text: string }) => (
 // TODO: maybe add tx link to scanner
 export const Message = ({ message }: { message: MergedMessage }) => {
   const [isOpenAnalyzeDialogOpen, setIsOpenAnalyzeDialogOpen] = useState(false);
-  const localTime = new Date(message?.createdAt).toLocaleString();
-  if (!message.content?.action_data) {
-    return null;
-  }
+  const localTime = new Date(message.createdAt).toLocaleString();
   const actionDataSwap = message.content.action_data as SWAP_MESSAGE;
   const actionDataPortfolioAnalysis = message.content.action_data as ANALYZE_MESSAGE;
-  const isAnalyze = message.content.action === "PORTFOLIO_ANALYSIS" || message.content.action === "ANALYZE_TRADE";
+  const isAnalyze =
+    message.content.action === MessageActionType.ANALYZE_PORTFOLIO || message.content.action === MessageActionType.ANALYZE_TRADE;
+
   return (
     <div
       className={cn(
@@ -72,6 +72,7 @@ export const Message = ({ message }: { message: MergedMessage }) => {
           setIsOpenAnalyzeDialogOpen(true);
         }
       }}
+      key={message.createdAt}
     >
       <div className="flex z-10 items-start gap-2">
         <div className="rounded-xl border-[0.5px] border-gray-700 w-full text-gray-200 px-5 py-3 max-w-full bg-gray-950">
@@ -86,43 +87,44 @@ export const Message = ({ message }: { message: MergedMessage }) => {
         </div>
       </div>
 
-      {message.content.action === "SWAP_TOKEN" && (
+      {/*{message.content.action === MessageActionType.SWAP_TOKEN && (*/}
+      {/*  <div className="w-full flex items-end -mt-3 pt-5 gap-2 rounded-b-xl px-5 pb-3 bg-gray-300">*/}
+      {/*    <div className="flex rounded-2xl items-center gap-2 font-medium text-md text-black w-full max-w-full">*/}
+      {/*      <div className="flex gap-1 items-center">*/}
+      {/*        <span>{actionDataSwap.amount}</span>*/}
+      {/*        <span>{actionDataSwap.from_coin_type.split("::").pop()}</span>*/}
+      {/*      </div>*/}
+      {/*      <SwapIcon className="w-5 h-5" />*/}
+      {/*      <div className="flex gap-2 items-center">*/}
+      {/*        <span>{actionDataSwap.destination_coin_type.split("::").pop()}</span>*/}
+      {/*      </div>*/}
+      {/*    </div>*/}
+      {/*  </div>*/}
+      {/*)}*/}
+      {(message.content.action === MessageActionType.ANALYZE_PORTFOLIO ||
+        message.content.action === MessageActionType.ANALYZE_TRADE) && (
         <div className="w-full flex items-end -mt-3 pt-5 gap-2 rounded-b-xl px-5 pb-3 bg-gray-300">
           <div className="flex rounded-2xl items-center gap-2 font-medium text-md text-black w-full max-w-full">
-            <div className="flex gap-1 items-center">
-              <span>{actionDataSwap.amount}</span>
-              <span>{actionDataSwap.from_coin_type.split("::").pop()}</span>
-            </div>
-            <SwapIcon className="w-5 h-5" />
-            <div className="flex gap-2 items-center">
-              <span>{actionDataSwap.destination_coin_type.split("::").pop()}</span>
-            </div>
-          </div>
-        </div>
-      )}
-      {(message.content.action === "PORTFOLIO_ANALYSIS" || message.content.action === "ANALYZE_TRADE") && (
-        <div className="w-full flex items-end -mt-3 pt-5 gap-2 rounded-b-xl px-5 pb-3 bg-gray-300">
-          <div className="flex rounded-2xl items-center gap-2 font-medium text-md text-black w-full max-w-full">
-            {actionDataPortfolioAnalysis.recommendation === "HOLD" ? (
+            {actionDataPortfolioAnalysis?.recommendation === "HOLD" ? (
               <BadgeActionGrayForWhiteBg
                 text={
                   "Recommended: " +
-                  actionDataPortfolioAnalysis.recommendation.toLocaleLowerCase() +
+                  actionDataPortfolioAnalysis?.recommendation.toLocaleLowerCase() +
                   " " +
-                  actionDataPortfolioAnalysis.coinType.split("::").pop()
+                  actionDataPortfolioAnalysis?.coinType.split("::").pop()
                 }
               />
             ) : (
               <BadgeActionGrayForWhiteBg
                 text={
                   "Recommended: " +
-                  actionDataPortfolioAnalysis.recommendation.toLocaleLowerCase() +
+                  actionDataPortfolioAnalysis?.recommendation.toLocaleLowerCase() +
                   " " +
-                  actionDataPortfolioAnalysis.amount +
+                  actionDataPortfolioAnalysis?.amount +
                   " " +
-                  actionDataPortfolioAnalysis.coinType.split("::").pop() +
+                  actionDataPortfolioAnalysis?.coinType.split("::").pop() +
                   " for " +
-                  actionDataPortfolioAnalysis.nextAction.toCoinType?.split("::").pop()
+                  actionDataPortfolioAnalysis?.nextAction.toCoinType?.split("::").pop()
                 }
               />
             )}

@@ -28,7 +28,6 @@ const fetchObject = async () => {
   }
   const response = object.data as unknown as ObjectData;
   const trades = response?.content?.fields?.action_blobs?.fields.contents.fields.size;
-  console.log("trades", trades);
   return trades;
 };
 

@@ -6,7 +6,6 @@ import { useEffect, useState, useMemo } from "react";
 export const MessageFeed = () => {
   const { data: messages, isLoading, isFetching, dataUpdatedAt } = useQueryMessages();
   const [timeLeft, setTimeLeft] = useState(REFETCH_MESSAGES_INTERVAL / 1000);
-
   // Calculate time since last update
   useEffect(() => {
     const timeSinceLastUpdate = Date.now() - dataUpdatedAt;

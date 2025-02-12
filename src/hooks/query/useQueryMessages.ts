@@ -1,5 +1,6 @@
 import supabaseClient from "@/lib/supabase/supabase";
 import { useQuery } from "@tanstack/react-query";
+import { MessageActionType } from "@/types";
 
 interface MessageResponse {
   content: {
@@ -12,7 +13,7 @@ interface MessageResponse {
 }
 
 export interface ANALYZE_MESSAGE {
-  type: "PORTFOLIO_ANALYSIS" | "ANALYZE_TRADE";
+  type: MessageActionType.ANALYZE_PORTFOLIO | MessageActionType.ANALYZE_TRADE;
   tokenName: string;
   coinType: string;
   recommendation: string;
@@ -28,7 +29,7 @@ export interface ANALYZE_MESSAGE {
 }
 
 export interface SWAP_MESSAGE {
-  type: "SWAP_TOKEN";
+  type: MessageActionType.SWAP_TOKEN;
   amount: number;
   destination_coin_type: string;
   from_coin_type: string;
@@ -81,6 +82,8 @@ function mergeMessagesPreservingOrder(messages: MessageResponse[]): MergedMessag
     }
   }
 
+  console.log("result", result);
+
   return result;
 }
 export const REFETCH_MESSAGES_INTERVAL = 250 * 1_000; // 250 seconds
@@ -94,7 +97,6 @@ export const useQueryMessages = () => {
       .or("content->>source.is.null,content->>source.neq.direct") // Include records where source is null OR not "direct"
       .order("createdAt", { ascending: false })
       .limit(50);
-
     if (error) {
       console.error(error);
     } else {

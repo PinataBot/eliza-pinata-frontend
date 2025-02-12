@@ -19,13 +19,13 @@ export const AnalyzeDialog = (props: IAnalyzeDialogProps) => {
         <h3 className="font-bold text-xl mb-4">Analysis</h3>
         <div className="flex flex-col gap-3">
           <p>
-            <span className="font-bold">Reasoning:</span> {props.analyzeData.reasoning}
+            <span className="font-bold">Reasoning:</span> {props?.analyzeData?.reasoning}
           </p>
           <p>
-            <span className="font-bold">Opportunities:</span> {props.analyzeData.opportunities}
+            <span className="font-bold">Opportunities:</span> {props?.analyzeData?.opportunities}
           </p>
           <p>
-            <span className="font-bold">Risks:</span> {props.analyzeData.risks}
+            <span className="font-bold">Risks:</span> {props?.analyzeData?.risks}
           </p>
         </div>
       </div>
